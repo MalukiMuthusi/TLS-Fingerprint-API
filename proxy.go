@@ -4,11 +4,12 @@ import (
 	"compress/zlib"
 	"flag"
 	"fmt"
-	"github.com/fatih/color"
 	"io/ioutil"
 	"log"
 	"strconv"
 	"time"
+
+	"github.com/fatih/color"
 
 	"bytes"
 	"compress/gzip"
@@ -26,6 +27,9 @@ import (
 //var client http.Client
 
 func main() {
+
+	// TODO: Add authorization code here
+
 	port := flag.String("port", "8082", "A port number (default 8082)")
 	flag.Parse()
 	fmt.Println("Hosting a TLS API on port " + *port)
