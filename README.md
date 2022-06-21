@@ -27,6 +27,10 @@ Optional: Add the request header "poptls-timeout" and set it to an integer (in s
 
 By default the program runs on port 8082. You can specify another port by passing a flag --port=PORTNUM
 
+## Provide a token
+
+To use the program you should provide a token flag during start of program e.g `-token=0cb5cf77-5cf4-40a3-a429-fdcfaba9e7cf`
+
 ## Examples:
 
 ### Node.js

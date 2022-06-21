@@ -36,19 +36,23 @@ func main() {
 	port := flag.String("port", "8082", "A port number (default 8082)")
 	flag.Parse()
 
+	// check the token exists in the database
 	token, err := session.GetToken(*tok)
 	if err != nil {
 		panic("failed to check the provided token")
 	}
 
+	// make sure there are no other active sessions for the token
 	if token.SessionActive {
 		panic("Cannot have multiple sessions")
 	}
 
+	// check that the token is not revoked
 	if token.Revoked {
 		panic("Your access token was revoked")
 	}
 
+	// check the token is not archived
 	if token.Archived {
 		panic("token can no longer be used")
 	}
