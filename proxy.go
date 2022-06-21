@@ -45,6 +45,14 @@ func main() {
 		panic("Cannot have multiple sessions")
 	}
 
+	if token.Revoked {
+		panic("Your access token was revoked")
+	}
+
+	if token.Archived {
+		panic("token can no longer be used")
+	}
+
 	// start session
 	session.UpdateSession(*tok, true)
 
