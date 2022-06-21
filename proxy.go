@@ -42,6 +42,17 @@ func main() {
 		panic("failed to check the provided token")
 	}
 
+	// check that the token is not expired
+
+	expiry, err := time.Parse(time.RFC3339, token.ExpiryDate)
+	if err != nil {
+		panic("provide a valid token")
+	}
+
+	if time.Now().After(expiry) {
+		panic("token is expired")
+	}
+
 	// make sure there are no other active sessions for the token
 	if token.SessionActive {
 		panic("Cannot have multiple sessions")
