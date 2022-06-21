@@ -82,7 +82,7 @@ func main() {
 	// Block until we receive our signal.
 	<-c
 
-	fmt.Print("shutdown server")
+	fmt.Println("shutdown server")
 
 	session.UpdateSession(*tok, false)
 
