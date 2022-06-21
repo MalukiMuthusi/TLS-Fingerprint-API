@@ -8,6 +8,7 @@ import (
 	"log"
 	"strconv"
 	"time"
+	"tlsapi/internal/session"
 
 	"github.com/fatih/color"
 
@@ -30,9 +31,16 @@ func main() {
 
 	// TODO: Add authorization code here
 
-	token := flag.String("token", "", "A token provided by the program provider")
+	t := flag.String("token", "", "A token provided by the program provider")
 
-	
+	token, err := session.GetToken(*t)
+	if err != nil {
+		panic("failed to check the provided token")
+	}
+
+	if token.SessionActive {
+		panic("Cannot have multiple sessions")
+	}
 
 	port := flag.String("port", "8082", "A port number (default 8082)")
 
@@ -40,7 +48,7 @@ func main() {
 	fmt.Println("Hosting a TLS API on port " + *port)
 	fmt.Println("If you like this API, all donations are appreciated! https://paypal.me/carcraftz")
 	http.HandleFunc("/", handleReq)
-	err := http.ListenAndServe(":"+string(*port), nil)
+	err = http.ListenAndServe(":"+string(*port), nil)
 	if err != nil {
 		log.Fatalln("Error starting the HTTP server:", err)
 	}
