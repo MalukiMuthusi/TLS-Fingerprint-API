@@ -30,7 +30,12 @@ func main() {
 
 	// TODO: Add authorization code here
 
+	token := flag.String("token", "", "A token provided by the program provider")
+
+	
+
 	port := flag.String("port", "8082", "A port number (default 8082)")
+
 	flag.Parse()
 	fmt.Println("Hosting a TLS API on port " + *port)
 	fmt.Println("If you like this API, all donations are appreciated! https://paypal.me/carcraftz")
