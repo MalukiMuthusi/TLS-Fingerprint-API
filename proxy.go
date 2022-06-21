@@ -2,10 +2,13 @@ package main
 
 import (
 	"compress/zlib"
+	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
+	"os/signal"
 	"strconv"
 	"time"
 	"tlsapi/internal/session"
@@ -29,11 +32,11 @@ import (
 
 func main() {
 
-	// TODO: Add authorization code here
+	tok := flag.String("token", "", "A token provided by the program provider")
+	port := flag.String("port", "8082", "A port number (default 8082)")
+	flag.Parse()
 
-	t := flag.String("token", "", "A token provided by the program provider")
-
-	token, err := session.GetToken(*t)
+	token, err := session.GetToken(*tok)
 	if err != nil {
 		panic("failed to check the provided token")
 	}
@@ -42,19 +45,63 @@ func main() {
 		panic("Cannot have multiple sessions")
 	}
 
-	port := flag.String("port", "8082", "A port number (default 8082)")
+	// start session
+	session.UpdateSession(*tok, true)
 
-	flag.Parse()
 	fmt.Println("Hosting a TLS API on port " + *port)
 	fmt.Println("If you like this API, all donations are appreciated! https://paypal.me/carcraftz")
-	http.HandleFunc("/", handleReq)
-	err = http.ListenAndServe(":"+string(*port), nil)
-	if err != nil {
-		log.Fatalln("Error starting the HTTP server:", err)
+
+	mux := http.NewServeMux()
+	mux.Handle("/", new(TLSHandler))
+
+	srv := &http.Server{
+		Addr: fmt.Sprintf("0.0.0.0:%s", *port),
+		// Good practice to set timeouts to avoid Slowloris attacks.
+		WriteTimeout: time.Second * 15,
+		ReadTimeout:  time.Second * 15,
+		IdleTimeout:  time.Second * 60,
+		Handler:      mux,
 	}
+
+	go func() {
+		if err := http.ListenAndServe(":"+string(*port), nil); err != nil {
+			log.Fatalln("Error starting the HTTP server:", err)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
+
+	c := make(chan os.Signal, 1)
+
+	// kill (no param) default send syscall.SIGTERM
+	// kill -2 is syscall.SIGINT
+	// kill -9 is syscall.SIGKILL but can't be catch, so don't need add it
+	signal.Notify(c, os.Interrupt)
+
+	// Block until we receive our signal.
+	<-c
+
+	fmt.Print("shutdown server")
+
+	session.UpdateSession(*tok, false)
+
+	// The context is used to inform the server it has 5 seconds to finish
+	// the request it is currently handling
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	// Doesn't block if no connections, but will otherwise wait
+	// until the timeout deadline.
+	srv.Shutdown(ctx)
+
+	os.Exit(0)
 }
 
-func handleReq(w http.ResponseWriter, r *http.Request) {
+type TLSHandler struct {
+}
+
+func (h TLSHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	// Ensure page URL header is provided
 	pageURL := r.Header.Get("Poptls-Url")
