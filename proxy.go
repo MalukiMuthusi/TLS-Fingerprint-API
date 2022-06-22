@@ -75,7 +75,7 @@ func main() {
 	fmt.Println("If you like this API, all donations are appreciated! https://paypal.me/carcraftz")
 
 	mux := http.NewServeMux()
-	mux.Handle("/", new(TLSHandler))
+	mux.Handle("/", TLSHandler{})
 
 	srv := &http.Server{
 		Addr: fmt.Sprintf("0.0.0.0:%s", *port),
@@ -87,7 +87,7 @@ func main() {
 	}
 
 	go func() {
-		if err := http.ListenAndServe(":"+string(*port), nil); err != nil {
+		if err := srv.ListenAndServe(); err != nil {
 			log.Fatalln("Error starting the HTTP server:", err)
 		}
 	}()
