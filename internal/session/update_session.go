@@ -21,7 +21,7 @@ func UpdateSession(token string, sessionActive bool) {
 		fmt.Println(err)
 	}
 
-	resp, err := http.Post("https://tfa-fur355ca3q-uc.a.run.app/session", "application/json", bytes.NewBuffer(b))
+	resp, err := http.Post("https://tfa-z4mvziz65a-uc.a.run.app/session", "application/json", bytes.NewBuffer(b))
 	if err != nil {
 		panic(err)
 	}

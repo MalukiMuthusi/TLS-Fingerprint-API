@@ -10,7 +10,7 @@ import (
 
 func GetToken(t string) (*models.Token, error) {
 
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://tfa-fur355ca3q-uc.a.run.app/token/%s", t), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://tfa-z4mvziz65a-uc.a.run.app/token/%s", t), nil)
 	if err != nil {
 		panic(err)
 	}
