@@ -23,3 +23,7 @@ type UpdateSessionCountPost struct {
 type EncryptedSessionCount struct {
 	Token string `json:"token"`
 }
+
+type GetTokenResponse struct {
+	Token string `json:"token"`
+}
