@@ -14,3 +14,8 @@ type UpdateSessionPost struct {
 	SessionActive bool   `json:"session_active" form:"session_active"`
 	Token         string `json:"token" form:"token"`
 }
+
+type UpdateSessionCountPost struct {
+	SessionCount int    `json:"session_count" form:"session_count"`
+	Token        string `json:"token" form:"token"`
+}

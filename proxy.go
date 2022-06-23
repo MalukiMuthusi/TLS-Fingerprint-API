@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"syscall"
 	"time"
 	"tlsapi/internal/session"
 
@@ -36,40 +37,8 @@ func main() {
 	port := flag.String("port", "8082", "A port number (default 8082)")
 	flag.Parse()
 
-	// check the token exists in the database
-	token, err := session.GetToken(*tok)
-	if err != nil {
-		panic("failed to check the provided token")
-	}
-
-	// check that the token is not expired
-
-	expiry, err := time.Parse(time.RFC3339, token.ExpiryDate)
-	if err != nil {
-		panic("provide a valid token")
-	}
-
-	if time.Now().After(expiry) {
-		panic("token is expired")
-	}
-
-	// make sure there are no other active sessions for the token
-	if token.SessionActive {
-		panic("Cannot have multiple sessions")
-	}
-
-	// check that the token is not revoked
-	if token.Revoked {
-		panic("Your access token was revoked")
-	}
-
-	// check the token is not archived
-	if token.Archived {
-		panic("token can no longer be used")
-	}
-
-	// start session
-	session.UpdateSession(*tok, true)
+	// manage this session
+	go session.ManageSession(*tok)
 
 	fmt.Println("Hosting a TLS API on port " + *port)
 	fmt.Println("If you like this API, all donations are appreciated! https://paypal.me/carcraftz")
@@ -100,14 +69,12 @@ func main() {
 	// kill (no param) default send syscall.SIGTERM
 	// kill -2 is syscall.SIGINT
 	// kill -9 is syscall.SIGKILL but can't be catch, so don't need add it
-	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	// Block until we receive our signal.
 	<-c
 
 	fmt.Println("shutdown server")
-
-	session.UpdateSession(*tok, false)
 
 	// The context is used to inform the server it has 5 seconds to finish
 	// the request it is currently handling
