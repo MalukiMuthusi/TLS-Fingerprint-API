@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/beevik/ntp v0.3.0 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/mattn/go-colorable v0.1.9 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

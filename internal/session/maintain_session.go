@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 	"tlsapi/internal/models"
+
+	"github.com/beevik/ntp"
 )
 
 func ManageSession(t string) {
@@ -47,7 +49,12 @@ func CheckExpiry(token *models.Token) {
 		panic("provide a valid token")
 	}
 
-	if time.Now().After(expiry) {
+	now, err := ntp.Time("0.beevik-ntp.pool.ntp.org")
+	if err != nil {
+		now = time.Now()
+	}
+
+	if now.After(expiry) {
 		panic("token is expired")
 	}
 }
