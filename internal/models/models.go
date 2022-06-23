@@ -19,3 +19,7 @@ type UpdateSessionCountPost struct {
 	SessionCount int    `json:"session_count" form:"session_count"`
 	Token        string `json:"token" form:"token"`
 }
+
+type EncryptedSessionCount struct {
+	Token string `json:"token"`
+}
