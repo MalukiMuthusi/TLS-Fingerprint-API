@@ -8,8 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"tlsapi/internal/models"
-
-	"github.com/MalukiMuthusi/mintbase/logger"
 )
 
 func GetToken(t string) (*models.Token, error) {
@@ -66,7 +64,6 @@ func Decrypt(encryptedToken models.GetTokenResponse) (*models.Token, error) {
 
 	err = json.Unmarshal(plainText, &token)
 	if err != nil {
-		logger.Log.Info(err)
 		return nil, err
 	}
 

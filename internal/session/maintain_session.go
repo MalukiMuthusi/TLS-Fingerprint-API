@@ -20,7 +20,7 @@ func ManageSession(t string) {
 		// increment session count
 		UpdateSessionCount(t, count+1)
 
-		time.Sleep(time.Second * 10)
+		time.Sleep(time.Second * 15)
 
 		// get the new session count
 		newToken, err := GetToken(t)
